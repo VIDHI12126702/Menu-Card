@@ -239,7 +239,6 @@ export default function App() {
                   onChange={(e) => setPin(e.target.value)}
                 />
                 <button type="submit">Login</button>
-                <small>Demo PIN: admin123</small>
               </form>
             ) : (
               <div className="adminGrid">
