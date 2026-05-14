@@ -1,8 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const isMobile = window.innerWidth < 768;
 
   // OWNER LOGIN
   const toggleAdmin = () => {
@@ -16,7 +17,7 @@ export default function App() {
     }
   };
 
-  // OWNER LOGOUT / BACK TO MAIN PAGE
+  // OWNER LOGOUT
   const logoutAdmin = () => {
     const confirmLogout = window.confirm(
       "Do you want to go back to customer view?"
@@ -26,9 +27,10 @@ export default function App() {
 
     setIsAdmin(false);
 
-    alert("Returned To Main Page Successfully");
+    alert("Returned To Main Page");
   };
 
+  // DEFAULT MENU
   const defaultMenu = [
     {
       title: "ATITHI BREAKFAST COMBO",
@@ -43,9 +45,9 @@ export default function App() {
       title: "NORTH INDIAN BREAKFAST",
       items: [
         { name: "Poori Bhaji", price: "9" },
-        { name: "Chole Poori", price: "10" },
         { name: "Halwa Poori", price: "11" },
         { name: "Chole Bhature", price: "11" },
+        { name: "Paneer Paratha", price: "8" },
       ],
     },
 
@@ -56,95 +58,77 @@ export default function App() {
         { name: "Vada Sambar", price: "9" },
         { name: "Plain Dosa", price: "12" },
         { name: "Masala Dosa", price: "14" },
-        { name: "Mysore Masala Dosa", price: "15" },
       ],
     },
 
     {
-      title: "TANDOOR SPECIALITIES",
+      title: "STARTERS & STREET FOOD",
       items: [
         { name: "Paneer Tikka", price: "17" },
         { name: "Malai Tikka", price: "17" },
         { name: "Hariyali Tikka", price: "17" },
-        { name: "Achari Tikka", price: "17" },
-      ],
-    },
-
-    {
-      title: "INDIAN STREET FOOD",
-      items: [
         { name: "Pani Puri", price: "7" },
         { name: "Dahi Puri", price: "8" },
-        { name: "Aloo Tikki Chaat", price: "8" },
-        { name: "Dahi Papdi Chaat", price: "9" },
       ],
     },
 
     {
-      title: "CURRIES - CHEF'S SELECTION",
+      title: "MAINS, CURRIES & RICE",
       items: [
         { name: "Paneer Butter Masala", price: "18" },
-        { name: "Paneer Makhani", price: "18" },
         { name: "Kadhai Paneer", price: "18" },
-        { name: "Palak Paneer", price: "18" },
-      ],
-    },
-
-    {
-      title: "RICE",
-      items: [
-        { name: "Steamed Basmati Rice", price: "3" },
-        { name: "Jeera Rice", price: "4" },
+        { name: "Dal Tadka", price: "14" },
+        { name: "Butter Naan", price: "4.5" },
         { name: "Veg Dum Biryani", price: "17" },
       ],
     },
 
     {
-      title: "BREADS",
+      title: "ATITHI LUNCH EXPRESS",
       items: [
-        { name: "Plain Naan", price: "4" },
-        { name: "Butter Naan", price: "4.5" },
-        { name: "Garlic Naan", price: "5" },
-        { name: "Tandoori Roti", price: "4" },
+        { name: "Veg Lunch Thali", price: "14.99" },
+        { name: "Pav Bhaji Combo", price: "12.99" },
+        { name: "Dosa Combo", price: "12.99" },
       ],
     },
 
     {
       title: "DESSERTS",
       items: [
-        { name: "Gulab Jamun", price: "4.99" },
-        { name: "Rice Kheer", price: "5.49" },
-        { name: "Royal Rose Falooda", price: "8.49" },
+        { name: "Gulab Jamun", price: "4" },
+        { name: "Rice Kheer", price: "4" },
+        { name: "Royal Rose Falooda", price: "9" },
       ],
     },
 
     {
       title: "BEVERAGES",
       items: [
-        { name: "Mango Mint Blast", price: "6.99" },
-        { name: "Sweet Lassi", price: "4.99" },
-        { name: "Cold Coffee", price: "6.99" },
+        { name: "Mango Mint Blast", price: "7" },
+        { name: "Cold Coffee", price: "7" },
+        { name: "Masala Chai", price: "4" },
       ],
     },
   ];
 
-const [menuSections, setMenuSections] = useState(() => {
-  const savedMenu = localStorage.getItem("restaurantMenu");
+  // LOCAL STORAGE
+  const [menuSections, setMenuSections] = useState(() => {
+    const savedMenu = localStorage.getItem("restaurantMenu");
 
-  return savedMenu
-    ? JSON.parse(savedMenu)
-    : defaultMenu;
-});
+    return savedMenu
+      ? JSON.parse(savedMenu)
+      : defaultMenu;
+  });
 
-// AUTO SAVE MENU
-useEffect(() => {
-  localStorage.setItem(
-    "restaurantMenu",
-    JSON.stringify(menuSections)
-  );
-}, [menuSections]);
+  // AUTO SAVE
+  useEffect(() => {
+    localStorage.setItem(
+      "restaurantMenu",
+      JSON.stringify(menuSections)
+    );
+  }, [menuSections]);
 
-// UPDATE ITEM
+  // UPDATE ITEM
   const updateItem = (sectionIndex, itemIndex, field, value) => {
     const updated = [...menuSections];
 
@@ -164,7 +148,7 @@ useEffect(() => {
 
     setMenuSections(updated);
 
-    alert("New Item Added Successfully");
+    alert("Item Added Successfully");
   };
 
   // DELETE ITEM
@@ -208,7 +192,7 @@ useEffect(() => {
 
     setMenuSections(updated);
 
-    alert("New Section Added Successfully");
+    alert("Section Added Successfully");
   };
 
   // DELETE SECTION
@@ -233,17 +217,20 @@ useEffect(() => {
       style={{
         background: "#efe7d3",
         minHeight: "100vh",
-        padding: "20px",
+        padding: isMobile ? "10px" : "20px",
         fontFamily: "Georgia, serif",
       }}
     >
       <div
         style={{
-          maxWidth: "1250px",
+          width: "100%",
+          maxWidth: "1450px",
           margin: "0 auto",
           background: "#f8f1e4",
           border: "4px solid #c19a49",
-          padding: "25px",
+          padding: isMobile ? "12px" : "25px",
+          borderRadius: "15px",
+          boxSizing: "border-box",
         }}
       >
         {/* TOP BUTTONS */}
@@ -253,6 +240,7 @@ useEffect(() => {
             justifyContent: "flex-end",
             gap: "10px",
             marginBottom: "20px",
+            flexWrap: "wrap",
           }}
         >
           {!isAdmin ? (
@@ -296,21 +284,26 @@ useEffect(() => {
             style={{
               width: "100%",
               maxWidth: "700px",
+              height: "auto",
             }}
           />
         </div>
 
         {/* TITLE */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "50px",
-          }}
-        >
-          <h2
+        <div style={{ textAlign: "center", marginBottom: "50px" }}>
+          <h1
             style={{
               color: "#8b1e12",
-              fontSize: "36px",
+              fontSize: isMobile ? "24px" : "42px",
+            }}
+          >
+            ATITHI PURE VEG CALGARY
+          </h1>
+
+          <h2
+            style={{
+              color: "#7d5a1b",
+              fontSize: isMobile ? "20px" : "28px",
             }}
           >
             PURE VEG LUXURY DINING
@@ -319,7 +312,7 @@ useEffect(() => {
           <p
             style={{
               color: "#6d4c22",
-              fontSize: "18px",
+              fontSize: isMobile ? "14px" : "18px",
               lineHeight: "1.8",
             }}
           >
@@ -341,6 +334,7 @@ useEffect(() => {
                 padding: "12px 20px",
                 cursor: "pointer",
                 fontSize: "16px",
+                borderRadius: "8px",
               }}
             >
               + Add New Section
@@ -352,8 +346,9 @@ useEffect(() => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "25px",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: "16px",
+            alignItems: "start",
           }}
         >
           {menuSections.map((section, sectionIndex) => (
@@ -362,10 +357,13 @@ useEffect(() => {
               style={{
                 background: "#fffaf0",
                 border: "2px solid #d9bf8b",
-                padding: "20px",
+                padding: isMobile ? "14px" : "20px",
+                borderRadius: "10px",
+                height: "fit-content",
+                overflow: "hidden",
               }}
             >
-              {/* SECTION TITLE */}
+              {/* TITLE */}
               {isAdmin ? (
                 <input
                   value={section.title}
@@ -375,10 +373,12 @@ useEffect(() => {
                   style={{
                     width: "100%",
                     padding: "10px",
-                    fontSize: "24px",
+                    fontSize: "20px",
                     marginBottom: "20px",
                     textAlign: "center",
                     fontWeight: "bold",
+                    border: "2px solid #d9bf8b",
+                    boxSizing: "border-box",
                   }}
                 />
               ) : (
@@ -389,7 +389,7 @@ useEffect(() => {
                     borderBottom: "2px solid #d9bf8b",
                     paddingBottom: "10px",
                     marginBottom: "20px",
-                    fontSize: "28px",
+                    fontSize: isMobile ? "20px" : "28px",
                   }}
                 >
                   {section.title}
@@ -407,6 +407,7 @@ useEffect(() => {
                     padding: "8px 12px",
                     marginBottom: "15px",
                     cursor: "pointer",
+                    borderRadius: "5px",
                   }}
                 >
                   Delete Section
@@ -419,15 +420,20 @@ useEffect(() => {
                   key={itemIndex}
                   style={{
                     display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
                     justifyContent: "space-between",
                     borderBottom: "1px dotted #c7ab73",
                     padding: "10px 0",
-                    fontSize: "17px",
-                    gap: "10px",
-                    alignItems: "center",
+                    fontSize: isMobile ? "14px" : "17px",
+                    gap: "8px",
+                    alignItems: isMobile ? "flex-start" : "center",
                   }}
                 >
-                  <div style={{ width: "60%" }}>
+                  <div
+                    style={{
+                      width: isMobile ? "100%" : "65%",
+                    }}
+                  >
                     {isAdmin ? (
                       <input
                         value={item.name}
@@ -441,7 +447,9 @@ useEffect(() => {
                         }
                         style={{
                           width: "100%",
-                          padding: "5px",
+                          padding: "8px",
+                          border: "1px solid #ccc",
+                          boxSizing: "border-box",
                         }}
                       />
                     ) : (
@@ -462,8 +470,9 @@ useEffect(() => {
                           )
                         }
                         style={{
-                          width: "70px",
-                          padding: "5px",
+                          width: "80px",
+                          padding: "8px",
+                          border: "1px solid #ccc",
                         }}
                       />
                     ) : (
@@ -483,6 +492,7 @@ useEffect(() => {
                         border: "none",
                         padding: "5px 10px",
                         cursor: "pointer",
+                        borderRadius: "5px",
                       }}
                     >
                       X
@@ -502,6 +512,8 @@ useEffect(() => {
                     border: "none",
                     padding: "8px 14px",
                     cursor: "pointer",
+                    borderRadius: "5px",
+                    width: isMobile ? "100%" : "auto",
                   }}
                 >
                   + Add Item
@@ -523,7 +535,7 @@ useEffect(() => {
           <h2
             style={{
               color: "#8b1e12",
-              fontSize: "34px",
+              fontSize: isMobile ? "24px" : "34px",
               marginBottom: "30px",
             }}
           >
@@ -533,33 +545,36 @@ useEffect(() => {
           <div
             style={{
               display: "flex",
+              flexDirection: isMobile ? "column" : "row",
               justifyContent: "center",
-              flexWrap: "wrap",
-              gap: "40px",
+              alignItems: "center",
+              gap: isMobile ? "12px" : "40px",
               marginBottom: "25px",
               color: "#6d4c22",
-              fontSize: "20px",
+              fontSize: isMobile ? "14px" : "20px",
             }}
           >
             <div>📍 Calgary, Alberta, Canada</div>
+
             <div>📞 +1 (403) 475-4414</div>
+
             <div>📧 info@atithicalgary.com</div>
+
             <div>🌐 atithicalgary.com</div>
           </div>
 
           <div
             style={{
               color: "#8b1e12",
-              fontSize: "22px",
+              fontSize: isMobile ? "15px" : "22px",
               fontWeight: "bold",
             }}
           >
-            ⭐ 100% Vegetarian • Fresh Ingredients • Swaminarayan Options Available
+            ⭐ 100% Vegetarian • Fresh Ingredients • Swaminarayan Options
+            Available
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-
