@@ -1,19 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-
-  // RESPONSIVE
-  useEffect(() => {
-    const handleResize = () => {
-      setScreenWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // OWNER LOGIN
   const toggleAdmin = () => {
@@ -27,7 +16,7 @@ export default function App() {
     }
   };
 
-  // OWNER LOGOUT
+  // OWNER LOGOUT / BACK TO MAIN PAGE
   const logoutAdmin = () => {
     const confirmLogout = window.confirm(
       "Do you want to go back to customer view?"
@@ -37,10 +26,10 @@ export default function App() {
 
     setIsAdmin(false);
 
-    alert("Returned To Main Page");
+    alert("Returned To Main Page Successfully");
   };
 
-  const [menuSections, setMenuSections] = useState([
+  const defaultMenu = [
     {
       title: "ATITHI BREAKFAST COMBO",
       items: [
@@ -54,11 +43,9 @@ export default function App() {
       title: "NORTH INDIAN BREAKFAST",
       items: [
         { name: "Poori Bhaji", price: "9" },
-        { name: "Poori", price: "10" },
+        { name: "Chole Poori", price: "10" },
         { name: "Halwa Poori", price: "11" },
         { name: "Chole Bhature", price: "11" },
-        { name: "Aloo Paratha", price: "7" },
-        { name: "Paneer Paratha", price: "8" },
       ],
     },
 
@@ -74,61 +61,90 @@ export default function App() {
     },
 
     {
-      title: "STARTERS & STREET FOOD",
+      title: "TANDOOR SPECIALITIES",
       items: [
         { name: "Paneer Tikka", price: "17" },
         { name: "Malai Tikka", price: "17" },
         { name: "Hariyali Tikka", price: "17" },
-        { name: "Pani Puri", price: "7" },
-        { name: "Dahi Puri", price: "8" },
-        { name: "Aloo Tikki Chaat", price: "8" },
+        { name: "Achari Tikka", price: "17" },
       ],
     },
 
     {
-      title: "MAINS, CURRIES & RICE",
+      title: "INDIAN STREET FOOD",
+      items: [
+        { name: "Pani Puri", price: "7" },
+        { name: "Dahi Puri", price: "8" },
+        { name: "Aloo Tikki Chaat", price: "8" },
+        { name: "Dahi Papdi Chaat", price: "9" },
+      ],
+    },
+
+    {
+      title: "CURRIES - CHEF'S SELECTION",
       items: [
         { name: "Paneer Butter Masala", price: "18" },
+        { name: "Paneer Makhani", price: "18" },
         { name: "Kadhai Paneer", price: "18" },
         { name: "Palak Paneer", price: "18" },
-        { name: "Dal Tadka", price: "14" },
-        { name: "Dal Makhni", price: "15" },
-        { name: "Butter Naan", price: "4.5" },
-        { name: "Garlic Naan", price: "5" },
+      ],
+    },
+
+    {
+      title: "RICE",
+      items: [
+        { name: "Steamed Basmati Rice", price: "3" },
+        { name: "Jeera Rice", price: "4" },
         { name: "Veg Dum Biryani", price: "17" },
       ],
     },
 
     {
-      title: "ATITHI LUNCH EXPRESS",
+      title: "BREADS",
       items: [
-        { name: "Atithi Veg Lunch Thali", price: "14.99" },
-        { name: "Pav Bhaji Combo", price: "12.99" },
-        { name: "Dosa Combo", price: "12.99" },
+        { name: "Plain Naan", price: "4" },
+        { name: "Butter Naan", price: "4.5" },
+        { name: "Garlic Naan", price: "5" },
+        { name: "Tandoori Roti", price: "4" },
       ],
     },
 
     {
       title: "DESSERTS",
       items: [
-        { name: "Gulab Jamun", price: "4" },
-        { name: "Rice Kheer", price: "4" },
-        { name: "Royal Rose Falooda", price: "9" },
+        { name: "Gulab Jamun", price: "4.99" },
+        { name: "Rice Kheer", price: "5.49" },
+        { name: "Royal Rose Falooda", price: "8.49" },
       ],
     },
 
     {
       title: "BEVERAGES",
       items: [
-        { name: "Mango Mint Blast", price: "7" },
-        { name: "Cold Coffee", price: "7" },
-        { name: "Masala Chai", price: "4" },
-        { name: "Filter Coffee", price: "4" },
+        { name: "Mango Mint Blast", price: "6.99" },
+        { name: "Sweet Lassi", price: "4.99" },
+        { name: "Cold Coffee", price: "6.99" },
       ],
     },
-  ]);
+  ];
 
-  // UPDATE ITEM
+const [menuSections, setMenuSections] = useState(() => {
+  const savedMenu = localStorage.getItem("restaurantMenu");
+
+  return savedMenu
+    ? JSON.parse(savedMenu)
+    : defaultMenu;
+});
+
+// AUTO SAVE MENU
+useEffect(() => {
+  localStorage.setItem(
+    "restaurantMenu",
+    JSON.stringify(menuSections)
+  );
+}, [menuSections]);
+
+// UPDATE ITEM
   const updateItem = (sectionIndex, itemIndex, field, value) => {
     const updated = [...menuSections];
 
@@ -148,7 +164,7 @@ export default function App() {
 
     setMenuSections(updated);
 
-    alert("Item Added Successfully");
+    alert("New Item Added Successfully");
   };
 
   // DELETE ITEM
@@ -192,7 +208,7 @@ export default function App() {
 
     setMenuSections(updated);
 
-    alert("Section Added Successfully");
+    alert("New Section Added Successfully");
   };
 
   // DELETE SECTION
@@ -217,20 +233,17 @@ export default function App() {
       style={{
         background: "#efe7d3",
         minHeight: "100vh",
-        padding: screenWidth < 768 ? "10px" : "20px",
+        padding: "20px",
         fontFamily: "Georgia, serif",
       }}
     >
       <div
         style={{
-          width: "100%",
-          maxWidth: "1450px",
+          maxWidth: "1250px",
           margin: "0 auto",
           background: "#f8f1e4",
           border: "4px solid #c19a49",
-          padding: screenWidth < 768 ? "12px" : "25px",
-          borderRadius: "15px",
-          boxSizing: "border-box",
+          padding: "25px",
         }}
       >
         {/* TOP BUTTONS */}
@@ -240,7 +253,6 @@ export default function App() {
             justifyContent: "flex-end",
             gap: "10px",
             marginBottom: "20px",
-            flexWrap: "wrap",
           }}
         >
           {!isAdmin ? (
@@ -284,26 +296,21 @@ export default function App() {
             style={{
               width: "100%",
               maxWidth: "700px",
-              height: "auto",
             }}
           />
         </div>
 
         {/* TITLE */}
-        <div style={{ textAlign: "center", marginBottom: "50px" }}>
-          <h1
-            style={{
-              color: "#8b1e12",
-              fontSize: screenWidth < 768 ? "30px" : "42px",
-            }}
-          >
-            ATITHI PURE VEG CALGARY
-          </h1>
-
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "50px",
+          }}
+        >
           <h2
             style={{
-              color: "#7d5a1b",
-              fontSize: screenWidth < 768 ? "22px" : "28px",
+              color: "#8b1e12",
+              fontSize: "36px",
             }}
           >
             PURE VEG LUXURY DINING
@@ -312,7 +319,7 @@ export default function App() {
           <p
             style={{
               color: "#6d4c22",
-              fontSize: screenWidth < 768 ? "15px" : "18px",
+              fontSize: "18px",
               lineHeight: "1.8",
             }}
           >
@@ -334,7 +341,6 @@ export default function App() {
                 padding: "12px 20px",
                 cursor: "pointer",
                 fontSize: "16px",
-                borderRadius: "8px",
               }}
             >
               + Add New Section
@@ -346,12 +352,8 @@ export default function App() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              screenWidth < 768
-                ? "1fr"
-                : "repeat(auto-fit, minmax(420px, 1fr))",
-            gap: "20px",
-            alignItems: "start",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "25px",
           }}
         >
           {menuSections.map((section, sectionIndex) => (
@@ -361,12 +363,9 @@ export default function App() {
                 background: "#fffaf0",
                 border: "2px solid #d9bf8b",
                 padding: "20px",
-                borderRadius: "10px",
-                height: "fit-content",
-                alignSelf: "start",
               }}
             >
-              {/* TITLE */}
+              {/* SECTION TITLE */}
               {isAdmin ? (
                 <input
                   value={section.title}
@@ -380,7 +379,6 @@ export default function App() {
                     marginBottom: "20px",
                     textAlign: "center",
                     fontWeight: "bold",
-                    border: "2px solid #d9bf8b",
                   }}
                 />
               ) : (
@@ -391,7 +389,7 @@ export default function App() {
                     borderBottom: "2px solid #d9bf8b",
                     paddingBottom: "10px",
                     marginBottom: "20px",
-                    fontSize: screenWidth < 768 ? "22px" : "28px",
+                    fontSize: "28px",
                   }}
                 >
                   {section.title}
@@ -409,7 +407,6 @@ export default function App() {
                     padding: "8px 12px",
                     marginBottom: "15px",
                     cursor: "pointer",
-                    borderRadius: "5px",
                   }}
                 >
                   Delete Section
@@ -425,13 +422,12 @@ export default function App() {
                     justifyContent: "space-between",
                     borderBottom: "1px dotted #c7ab73",
                     padding: "10px 0",
-                    fontSize: screenWidth < 768 ? "14px" : "17px",
+                    fontSize: "17px",
                     gap: "10px",
                     alignItems: "center",
-                    flexWrap: "wrap",
                   }}
                 >
-                  <div style={{ width: screenWidth < 768 ? "100%" : "65%" }}>
+                  <div style={{ width: "60%" }}>
                     {isAdmin ? (
                       <input
                         value={item.name}
@@ -446,7 +442,6 @@ export default function App() {
                         style={{
                           width: "100%",
                           padding: "5px",
-                          border: "1px solid #ccc",
                         }}
                       />
                     ) : (
@@ -469,7 +464,6 @@ export default function App() {
                         style={{
                           width: "70px",
                           padding: "5px",
-                          border: "1px solid #ccc",
                         }}
                       />
                     ) : (
@@ -489,7 +483,6 @@ export default function App() {
                         border: "none",
                         padding: "5px 10px",
                         cursor: "pointer",
-                        borderRadius: "5px",
                       }}
                     >
                       X
@@ -509,7 +502,6 @@ export default function App() {
                     border: "none",
                     padding: "8px 14px",
                     cursor: "pointer",
-                    borderRadius: "5px",
                   }}
                 >
                   + Add Item
@@ -531,7 +523,7 @@ export default function App() {
           <h2
             style={{
               color: "#8b1e12",
-              fontSize: screenWidth < 768 ? "26px" : "34px",
+              fontSize: "34px",
               marginBottom: "30px",
             }}
           >
@@ -543,33 +535,31 @@ export default function App() {
               display: "flex",
               justifyContent: "center",
               flexWrap: "wrap",
-              gap: screenWidth < 768 ? "15px" : "40px",
+              gap: "40px",
               marginBottom: "25px",
               color: "#6d4c22",
-              fontSize: screenWidth < 768 ? "14px" : "20px",
+              fontSize: "20px",
             }}
           >
             <div>📍 Calgary, Alberta, Canada</div>
-
             <div>📞 +1 (403) 475-4414</div>
-
             <div>📧 info@atithicalgary.com</div>
-
             <div>🌐 atithicalgary.com</div>
           </div>
 
           <div
             style={{
               color: "#8b1e12",
-              fontSize: screenWidth < 768 ? "16px" : "22px",
+              fontSize: "22px",
               fontWeight: "bold",
             }}
           >
-            ⭐ 100% Vegetarian • Fresh Ingredients • Swaminarayan Options
-            Available
+            ⭐ 100% Vegetarian • Fresh Ingredients • Swaminarayan Options Available
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+
