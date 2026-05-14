@@ -1,7 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  // RESPONSIVE
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // OWNER LOGIN
   const toggleAdmin = () => {
@@ -46,8 +58,6 @@ export default function App() {
         { name: "Halwa Poori", price: "11" },
         { name: "Chole Bhature", price: "11" },
         { name: "Aloo Paratha", price: "7" },
-        { name: "Gobi Paratha", price: "7" },
-        { name: "Mixed Veg Paratha", price: "7.5" },
         { name: "Paneer Paratha", price: "8" },
       ],
     },
@@ -69,24 +79,9 @@ export default function App() {
         { name: "Paneer Tikka", price: "17" },
         { name: "Malai Tikka", price: "17" },
         { name: "Hariyali Tikka", price: "17" },
-        { name: "Achari Tikka", price: "17" },
         { name: "Pani Puri", price: "7" },
         { name: "Dahi Puri", price: "8" },
         { name: "Aloo Tikki Chaat", price: "8" },
-        { name: "Ragda Patties", price: "9" },
-        { name: "Samosa Chaat", price: "9" },
-      ],
-    },
-
-    {
-      title: "SPECIAL SWAMINARAYAN MENU",
-      items: [
-        { name: "Paneer Butter Masala", price: "19" },
-        { name: "Kadhai Paneer", price: "19" },
-        { name: "Shahi Paneer", price: "19" },
-        { name: "Palak Paneer", price: "19" },
-        { name: "Dal Tadka", price: "14" },
-        { name: "Dal Makhni", price: "15" },
       ],
     },
 
@@ -96,13 +91,10 @@ export default function App() {
         { name: "Paneer Butter Masala", price: "18" },
         { name: "Kadhai Paneer", price: "18" },
         { name: "Palak Paneer", price: "18" },
-        { name: "Malai Kofta", price: "18" },
         { name: "Dal Tadka", price: "14" },
         { name: "Dal Makhni", price: "15" },
-        { name: "Plain Naan", price: "4" },
         { name: "Butter Naan", price: "4.5" },
         { name: "Garlic Naan", price: "5" },
-        { name: "Jeera Rice", price: "4" },
         { name: "Veg Dum Biryani", price: "17" },
       ],
     },
@@ -113,7 +105,6 @@ export default function App() {
         { name: "Atithi Veg Lunch Thali", price: "14.99" },
         { name: "Pav Bhaji Combo", price: "12.99" },
         { name: "Dosa Combo", price: "12.99" },
-        { name: "Chole Kulcha Combo", price: "12.99" },
       ],
     },
 
@@ -122,7 +113,6 @@ export default function App() {
       items: [
         { name: "Gulab Jamun", price: "4" },
         { name: "Rice Kheer", price: "4" },
-        { name: "Classic Kulfi", price: "5" },
         { name: "Royal Rose Falooda", price: "9" },
       ],
     },
@@ -131,20 +121,9 @@ export default function App() {
       title: "BEVERAGES",
       items: [
         { name: "Mango Mint Blast", price: "7" },
-        { name: "Mango Mastani", price: "8" },
         { name: "Cold Coffee", price: "7" },
         { name: "Masala Chai", price: "4" },
-        { name: "South Indian Filter Coffee", price: "4" },
-      ],
-    },
-
-    {
-      title: "ATITHI SIGNATURES",
-      items: [
-        { name: "Paneer Tikka", price: "18" },
-        { name: "Amritsari Kulcha with Chole", price: "17" },
-        { name: "Pav Bhaji", price: "16" },
-        { name: "Mysore Masala Dosa", price: "15" },
+        { name: "Filter Coffee", price: "4" },
       ],
     },
   ]);
@@ -238,18 +217,20 @@ export default function App() {
       style={{
         background: "#efe7d3",
         minHeight: "100vh",
-        padding: "20px",
+        padding: screenWidth < 768 ? "10px" : "20px",
         fontFamily: "Georgia, serif",
       }}
     >
       <div
         style={{
+          width: "100%",
           maxWidth: "1450px",
           margin: "0 auto",
           background: "#f8f1e4",
           border: "4px solid #c19a49",
-          padding: "25px",
+          padding: screenWidth < 768 ? "12px" : "25px",
           borderRadius: "15px",
+          boxSizing: "border-box",
         }}
       >
         {/* TOP BUTTONS */}
@@ -259,6 +240,7 @@ export default function App() {
             justifyContent: "flex-end",
             gap: "10px",
             marginBottom: "20px",
+            flexWrap: "wrap",
           }}
         >
           {!isAdmin ? (
@@ -302,6 +284,7 @@ export default function App() {
             style={{
               width: "100%",
               maxWidth: "700px",
+              height: "auto",
             }}
           />
         </div>
@@ -311,7 +294,7 @@ export default function App() {
           <h1
             style={{
               color: "#8b1e12",
-              fontSize: "42px",
+              fontSize: screenWidth < 768 ? "30px" : "42px",
             }}
           >
             ATITHI PURE VEG CALGARY
@@ -320,7 +303,7 @@ export default function App() {
           <h2
             style={{
               color: "#7d5a1b",
-              fontSize: "28px",
+              fontSize: screenWidth < 768 ? "22px" : "28px",
             }}
           >
             PURE VEG LUXURY DINING
@@ -329,7 +312,7 @@ export default function App() {
           <p
             style={{
               color: "#6d4c22",
-              fontSize: "18px",
+              fontSize: screenWidth < 768 ? "15px" : "18px",
               lineHeight: "1.8",
             }}
           >
@@ -363,8 +346,11 @@ export default function App() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))",
-            gap: "25px",
+            gridTemplateColumns:
+              screenWidth < 768
+                ? "1fr"
+                : "repeat(auto-fit, minmax(420px, 1fr))",
+            gap: "20px",
             alignItems: "start",
           }}
         >
@@ -405,7 +391,7 @@ export default function App() {
                     borderBottom: "2px solid #d9bf8b",
                     paddingBottom: "10px",
                     marginBottom: "20px",
-                    fontSize: "28px",
+                    fontSize: screenWidth < 768 ? "22px" : "28px",
                   }}
                 >
                   {section.title}
@@ -439,12 +425,13 @@ export default function App() {
                     justifyContent: "space-between",
                     borderBottom: "1px dotted #c7ab73",
                     padding: "10px 0",
-                    fontSize: "17px",
+                    fontSize: screenWidth < 768 ? "14px" : "17px",
                     gap: "10px",
                     alignItems: "center",
+                    flexWrap: "wrap",
                   }}
                 >
-                  <div style={{ width: "65%" }}>
+                  <div style={{ width: screenWidth < 768 ? "100%" : "65%" }}>
                     {isAdmin ? (
                       <input
                         value={item.name}
@@ -544,7 +531,7 @@ export default function App() {
           <h2
             style={{
               color: "#8b1e12",
-              fontSize: "34px",
+              fontSize: screenWidth < 768 ? "26px" : "34px",
               marginBottom: "30px",
             }}
           >
@@ -556,10 +543,10 @@ export default function App() {
               display: "flex",
               justifyContent: "center",
               flexWrap: "wrap",
-              gap: "40px",
+              gap: screenWidth < 768 ? "15px" : "40px",
               marginBottom: "25px",
               color: "#6d4c22",
-              fontSize: "20px",
+              fontSize: screenWidth < 768 ? "14px" : "20px",
             }}
           >
             <div>📍 Calgary, Alberta, Canada</div>
@@ -574,7 +561,7 @@ export default function App() {
           <div
             style={{
               color: "#8b1e12",
-              fontSize: "22px",
+              fontSize: screenWidth < 768 ? "16px" : "22px",
               fontWeight: "bold",
             }}
           >
