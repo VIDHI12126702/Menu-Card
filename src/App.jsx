@@ -2,735 +2,396 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import logo from "./assets/Atithi Logo.png";
 
+const layouts = [
+  { key: "breakfast", title: "BREAKFAST MENU" },
+  { key: "starter", title: "STARTERS & STREET FOOD" },
+  { key: "swaminarayan", title: "SPECIAL SWAMINARAYAN MENU" },
+  { key: "lunch", title: "ATITHI LUNCH EXPRESS" },
+  { key: "main", title: "MAINS, CURRIES & RICE" },
+  { key: "signature", title: "ATITHI SIGNATURES" },
+  { key: "beverage", title: "BEVERAGES" },
+  { key: "dessert", title: "DESSERTS" },
+];
+
 export default function App() {
-  const [menuSections, setMenuSections] = useState([]);
+  const [menuData, setMenuData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   const isMobile = window.innerWidth < 768;
 
-  // FETCH MENU
   useEffect(() => {
     fetchMenu();
   }, []);
 
   const fetchMenu = async () => {
-    setLoading(true);
+    const updatedData = {};
 
-    try {
-      const { data, error } = await supabase
+    for (const layout of layouts) {
+      const { data } = await supabase
         .from("menu")
-        .select("id,title,items")
-        .order("id", { ascending: true });
+        .select("*")
+        .eq("layout", layout.key)
+        .order("id");
 
-      if (error) {
-        console.log(error);
-        alert(error.message);
-      } else {
-        setMenuSections(data || []);
-      }
-    } catch (err) {
-      console.log(err);
-      alert("Something went wrong");
+      updatedData[layout.key] = (
+        data || []
+      ).map((section) => ({
+        ...section,
+        items: Array.isArray(
+          section.items
+        )
+          ? section.items
+          : [],
+      }));
     }
 
+    setMenuData(updatedData);
     setLoading(false);
   };
 
-  // OWNER LOGIN
-  const ownerLogin = () => {
-    const password = prompt("Enter Owner Password");
-
-    if (password === "atithi123") {
-      setIsAdmin(true);
-      alert("Owner Login Successful");
-    } else {
-      alert("Wrong Password");
-    }
-  };
-
-  // LOGOUT
-  const logoutOwner = () => {
-    setIsAdmin(false);
-  };
-
-  // ADD SECTION
-  const addSection = async () => {
-    const title = prompt("Enter Section Name");
-
-    if (!title) return;
-
-    const { error } = await supabase
-      .from("menu")
-      .insert([
-        {
-          title,
-          items: [],
-        },
-      ]);
-
-    if (error) {
-      alert(error.message);
-    } else {
-      fetchMenu();
-      alert("Section Added");
-    }
-  };
-
-  // DELETE SECTION
-  const deleteSection = async (id) => {
-    const confirmDelete = window.confirm(
-      "Delete this section?"
-    );
-
-    if (!confirmDelete) return;
-
-    const { error } = await supabase
-      .from("menu")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      alert(error.message);
-    } else {
-      fetchMenu();
-      alert("Section Deleted");
-    }
-  };
-
-  // UPDATE TITLE
-  const updateSectionTitle = (
-    sectionIndex,
-    value
-  ) => {
-    const updated = [...menuSections];
-
-    updated[sectionIndex].title = value;
-
-    setMenuSections(updated);
-  };
-
-  // UPDATE ITEM
-  const updateItem = (
-    sectionIndex,
-    itemIndex,
-    field,
-    value
-  ) => {
-    const updated = [...menuSections];
-
-    updated[sectionIndex].items[itemIndex][field] =
-      value;
-
-    setMenuSections(updated);
-  };
-
-  // ADD ITEM
-  const addItem = (sectionIndex) => {
-    const updated = [...menuSections];
-
-    updated[sectionIndex].items.push({
-      name: "New Item",
-      price: "0",
-    });
-
-    setMenuSections(updated);
-  };
-
-  // DELETE ITEM
-  const deleteItem = (
-    sectionIndex,
-    itemIndex
-  ) => {
-    const confirmDelete = window.confirm(
-      "Delete this item?"
-    );
-
-    if (!confirmDelete) return;
-
-    const updated = [...menuSections];
-
-    updated[sectionIndex].items.splice(itemIndex, 1);
-
-    setMenuSections(updated);
-  };
-
-  // SAVE SECTION
-  const saveSection = async (section) => {
-    const { error } = await supabase
-      .from("menu")
-      .update({
-        title: section.title,
-        items: section.items,
-      })
-      .eq("id", section.id);
-
-    if (error) {
-      alert(error.message);
-      console.log(error);
-    } else {
-      fetchMenu();
-      alert("Saved Successfully");
-    }
-  };
-
-  // LOADING
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "#efe7d3",
-          color: "#8b1e12",
-          fontSize: "30px",
-          fontFamily: "Georgia",
-        }}
-      >
+      <div style={loadingStyle}>
         Loading Menu...
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        background: "#efe7d3",
-        minHeight: "100vh",
-        padding: isMobile ? "10px" : "25px",
-        fontFamily: "Georgia, serif",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1500px",
-          margin: "0 auto",
-          background: "#f8f1e4",
-          border: "4px solid #c19a49",
-          borderRadius: "20px",
-          padding: isMobile ? "15px" : "30px",
-          boxSizing: "border-box",
-        }}
-      >
-        {/* TOP BUTTONS */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "10px",
-            flexWrap: "wrap",
-          }}
-        >
-          {!isAdmin ? (
-            <button
-              onClick={ownerLogin}
-              style={{
-                background: "#8b1e12",
-                color: "white",
-                border: "none",
-                padding: "12px 20px",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}
-            >
-              Owner Login
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={addSection}
-                style={{
-                  background: "green",
-                  color: "white",
-                  border: "none",
-                  padding: "12px 20px",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                + Add Section
-              </button>
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        {/* LOGO */}
 
-              <button
-                onClick={logoutOwner}
-                style={{
-                  background: "#444",
-                  color: "white",
-                  border: "none",
-                  padding: "12px 20px",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Customer View
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* TOP LOGO */}
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "20px",
-          }}
-        >
+        <div style={logoWrap}>
           <img
             src={logo}
-            alt="Atithi Logo"
+            alt="logo"
             style={{
-              width: isMobile ? "220px" : "340px",
-              height: "auto",
-              objectFit: "contain",
-              marginBottom: "20px",
-              filter:
-                "drop-shadow(0 5px 10px rgba(0,0,0,0.2))",
+              width: isMobile
+                ? "140px"
+                : "220px",
+              maxWidth: "100%",
             }}
           />
         </div>
 
-        {/* HEADER */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "50px",
-          }}
-        >
-          
+        {/* ALL LAYOUTS */}
 
-          <p
-            style={{
-              color: "#7d5a1b",
-              fontSize: isMobile ? "18px" : "28px",
-              fontStyle: "italic",
-              fontWeight: "600",
-              marginBottom: "12px",
-            }}
-          >
-            “Serving Authentic Indian Flavors With
-            Tradition, Purity & Love”
-          </p>
-
-          <p
-            style={{
-              color: "#8b1e12",
-              fontSize: isMobile ? "14px" : "18px",
-              maxWidth: "850px",
-              margin: "0 auto",
-              lineHeight: "1.8",
-            }}
-          >
-            Experience the rich taste of handcrafted
-            Indian cuisine made with fresh
-            ingredients, traditional recipes, and
-            pure vegetarian goodness in every bite.
-          </p>
-        </div>
-
-        {/* MENU */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile
-              ? "1fr"
-              : "1fr 1fr",
-            gap: "25px",
-          }}
-        >
-          {menuSections.map(
-            (section, sectionIndex) => (
-              <div
-                key={section.id}
-                style={{
-                  background: "#fffaf0",
-                  border: "2px solid #d8b46b",
-                  borderRadius: "15px",
-                  padding: "20px",
-                  height: "fit-content",
-                  boxShadow:
-                    "0 4px 10px rgba(0,0,0,0.08)",
-                }}
-              >
-                {/* SECTION TITLE */}
-                {isAdmin ? (
-                  <input
-                    value={section.title}
-                    onChange={(e) =>
-                      updateSectionTitle(
-                        sectionIndex,
-                        e.target.value
-                      )
-                    }
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      fontSize: "24px",
-                      fontWeight: "bold",
-                      marginBottom: "20px",
-                      borderRadius: "8px",
-                      border: "1px solid #ccc",
-                    }}
-                  />
-                ) : (
-                  <h2
-                    style={{
-                      textAlign: "center",
-                      color: "#7d5a1b",
-                      fontSize: isMobile
-                        ? "24px"
-                        : "34px",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {section.title}
-                  </h2>
-                )}
-
-                {/* ITEMS */}
-                {section.items &&
-                  section.items.map(
-                    (item, itemIndex) => (
-                      <div
-                        key={itemIndex}
-                        style={{
-                          display: "flex",
-                          justifyContent:
-                            "space-between",
-                          alignItems: "center",
-                          gap: "10px",
-                          padding: "12px 0",
-                          borderBottom:
-                            "1px dotted #d0b27c",
-                          flexDirection: isMobile
-                            ? "column"
-                            : "row",
-                        }}
-                      >
-                        {/* ITEM NAME */}
-                        <div
-                          style={{
-                            width: isMobile
-                              ? "100%"
-                              : "70%",
-                          }}
-                        >
-                          {isAdmin ? (
-                            <input
-                              value={item.name}
-                              onChange={(e) =>
-                                updateItem(
-                                  sectionIndex,
-                                  itemIndex,
-                                  "name",
-                                  e.target.value
-                                )
-                              }
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                borderRadius: "6px",
-                                border:
-                                  "1px solid #ccc",
-                              }}
-                            />
-                          ) : (
-                            <span
-                              style={{
-                                fontSize:
-                                  isMobile
-                                    ? "16px"
-                                    : "18px",
-                              }}
-                            >
-                              {item.name}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* PRICE */}
-                        <div>
-                          {isAdmin ? (
-                            <input
-                              value={item.price}
-                              onChange={(e) =>
-                                updateItem(
-                                  sectionIndex,
-                                  itemIndex,
-                                  "price",
-                                  e.target.value
-                                )
-                              }
-                              style={{
-                                width: "80px",
-                                padding: "8px",
-                                borderRadius: "6px",
-                                border:
-                                  "1px solid #ccc",
-                              }}
-                            />
-                          ) : (
-                            <strong
-                              style={{
-                                color: "#8b1e12",
-                                fontSize:
-                                  isMobile
-                                    ? "16px"
-                                    : "18px",
-                              }}
-                            >
-                              ${item.price}
-                            </strong>
-                          )}
-                        </div>
-
-                        {/* DELETE ITEM */}
-                        {isAdmin && (
-                          <button
-                            onClick={() =>
-                              deleteItem(
-                                sectionIndex,
-                                itemIndex
-                              )
-                            }
-                            style={{
-                              background: "red",
-                              color: "white",
-                              border: "none",
-                              padding:
-                                "6px 10px",
-                              borderRadius: "6px",
-                              cursor: "pointer",
-                            }}
-                          >
-                            X
-                          </button>
-                        )}
-                      </div>
-                    )
-                  )}
-
-                {/* ADMIN BUTTONS */}
-                {isAdmin && (
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      marginTop: "20px",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <button
-                      onClick={() =>
-                        addItem(sectionIndex)
-                      }
-                      style={{
-                        background: "#7d5a1b",
-                        color: "white",
-                        border: "none",
-                        padding: "10px",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      + Add Item
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        saveSection(section)
-                      }
-                      style={{
-                        background: "green",
-                        color: "white",
-                        border: "none",
-                        padding: "10px",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Save
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        deleteSection(
-                          section.id
-                        )
-                      }
-                      style={{
-                        background: "red",
-                        color: "white",
-                        border: "none",
-                        padding: "10px",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Delete Section
-                    </button>
-                  </div>
-                )}
-              </div>
-            )
-          )}
-        </div>
-
-        {/* MODERN FOOTER */}
-        <div
-          style={{
-            marginTop: "50px",
-            background: "#efe3c2",
-            color: "#5c4033",
-            border: "2px solid #c19a49",
-            borderRadius: "20px",
-            padding: isMobile
-              ? "25px 15px"
-              : "35px 35px",
-          }}
-        >
-          {/* TOP FOOTER */}
+        {layouts.map((layout) => (
           <div
+            key={layout.key}
             style={{
-              display: "grid",
-              gridTemplateColumns: isMobile
-                ? "1fr"
-                : "1.3fr 1fr 1fr",
-              gap: "25px",
-              alignItems: "start",
+              marginBottom:
+                isMobile
+                  ? "20px"
+                  : "40px",
             }}
           >
-            {/* LOGO & TITLE */}
-            <div>
-              <img
-                src={logo}
-                alt="Atithi Logo"
-                style={{
-                  width: isMobile
-                    ? "110px"
-                    : "160px",
-                  marginBottom: "12px",
-                  objectFit: "contain",
-                }}
-              />
-
-              <p
-                style={{
-                  color: "#6b4c2e",
-                  lineHeight: "1.7",
-                  fontSize: isMobile
-                    ? "13px"
-                    : "15px",
-                  maxWidth: "280px",
-                }}
-              >
-                Serving authentic Indian
-                vegetarian cuisine with
-                tradition, purity &
-                unforgettable taste in
-                Calgary.
-              </p>
-            </div>
-
-            {/* CONTACT */}
-            <div>
-              <h3
-                style={{
-                  color: "#8b1e12",
-                  marginBottom: "14px",
-                  fontSize: "17px",
-                }}
-              >
-                CONTACT
-              </h3>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  color: "#5c4033",
-                  fontSize: "14px",
-                  lineHeight: "1.6",
-                }}
-              >
-                <span>
-                  📍 Calgary, Alberta, Canada
-                </span>
-
-                <span>
-                  📞 +1 587-333-2292
-                </span>
-
-                <span>
-                  ✉️
-                  careers@atithirestaurants.com
-                </span>
-              </div>
-            </div>
-
-            {/* WEBSITE */}
-            <div>
-              <h3
-                style={{
-                  color: "#8b1e12",
-                  marginBottom: "14px",
-                  fontSize: "17px",
-                }}
-              >
-                WEBSITE
-              </h3>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  color: "#5c4033",
-                  fontSize: "14px",
-                }}
-              >
-                <span>
-                  www.atithicalgary.com
-                </span>
-
-                <span>
-                  Pure Veg • Family Restaurant
-                </span>
-
-                <span>
-                  Fresh Ingredients Everyday
-                </span>
-              </div>
-            </div>
+            <MenuCard
+              title={layout.title}
+              sections={
+                menuData[
+                  layout.key
+                ] || []
+              }
+            />
           </div>
-
-          {/* SMALL LINE */}
-          <div
-            style={{
-              height: "1px",
-              background: "#c19a49",
-              margin: "25px 0 18px",
-            }}
-          />
-
-          {/* COPYRIGHT */}
-          <p
-            style={{
-              textAlign: "center",
-              color: "#7d5a1b",
-              fontSize: "13px",
-              letterSpacing: "1px",
-              margin: "0",
-            }}
-          >
-           ATITHI PURE VEG CALGARY.
-            All Rights Reserved.
-          </p>
-        </div>
+        ))}
       </div>
     </div>
   );
 }
+
+function MenuCard({
+  title,
+  sections,
+}) {
+  const isMobile =
+    window.innerWidth < 768;
+
+  return (
+    <div style={cardStyle}>
+      {/* CORNERS */}
+
+      <div style={innerBorder}></div>
+
+      <div
+        style={
+          cornerTopLeft
+        }
+      ></div>
+
+      <div
+        style={
+          cornerTopRight
+        }
+      ></div>
+
+      {/* TITLE */}
+
+      <div
+        style={{
+          textAlign:
+            "center",
+          marginBottom:
+            isMobile
+              ? "20px"
+              : "35px",
+        }}
+      >
+        <h1
+          style={{
+            color:
+              "#9b7a1d",
+            fontSize:
+              isMobile
+                ? "28px"
+                : "48px",
+            marginBottom: "8px",
+            lineHeight: "1.2",
+          }}
+        >
+          {title}
+        </h1>
+
+        <p
+          style={{
+            color:
+              "#6c4b2d",
+            fontStyle:
+              "italic",
+            fontSize:
+              isMobile
+                ? "14px"
+                : "18px",
+          }}
+        >
+          Thoughtfully crafted
+        </p>
+      </div>
+
+      {/* SECTIONS */}
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            isMobile
+              ? "1fr"
+              : "repeat(2,minmax(0,1fr))",
+          gap:
+            isMobile
+              ? "20px"
+              : "30px",
+        }}
+      >
+        {sections.map((section) => (
+          <SectionBox
+            key={section.id}
+            section={section}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SectionBox({
+  section,
+}) {
+  const isMobile =
+    window.innerWidth < 768;
+
+  return (
+    <div>
+      <h2 style={sectionTitle}>
+        {section.title}
+      </h2>
+
+      {section.items.map(
+        (item, index) => {
+          if (
+            item.type ===
+            "note"
+          ) {
+            return (
+              <p
+                key={index}
+                style={{
+                  fontStyle:
+                    "italic",
+                  color: "#6c4b2d",
+                  marginBottom:
+                    "12px",
+                  fontSize:
+                    isMobile
+                      ? "14px"
+                      : "18px",
+                }}
+              >
+                {item.name}
+              </p>
+            );
+          }
+
+          return (
+            <MenuItem
+              key={index}
+              name={item.name}
+              price={item.price}
+            />
+          );
+        }
+      )}
+    </div>
+  );
+}
+
+function MenuItem({
+  name,
+  price,
+}) {
+  const isMobile =
+    window.innerWidth < 768;
+
+  return (
+    <div style={menuItem}>
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          color: "#5c2e12",
+          fontSize:
+            isMobile
+              ? "17px"
+              : "21px",
+          lineHeight: "1.5",
+          wordBreak: "break-word",
+        }}
+      >
+        {name}
+      </div>
+
+      <div
+        style={{
+          color: "#8b1e12",
+          fontWeight: "bold",
+          fontSize:
+            isMobile
+              ? "17px"
+              : "21px",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+        }}
+      >
+        ${price}
+      </div>
+    </div>
+  );
+}
+
+// STYLES
+
+const pageStyle = {
+  background: "#eef1f5",
+  minHeight: "100vh",
+  padding:
+    window.innerWidth < 768
+      ? "10px"
+      : "20px",
+  fontFamily:
+    "Georgia, serif",
+  overflowX: "hidden",
+};
+
+const containerStyle = {
+  width: "100%",
+  maxWidth: "1100px",
+  margin: "0 auto",
+};
+
+const loadingStyle = {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent:
+    "center",
+  alignItems: "center",
+  fontSize: "28px",
+};
+
+const logoWrap = {
+  textAlign: "center",
+  marginBottom: "25px",
+};
+
+const cardStyle = {
+  background: "#f9f2e4",
+  border:
+    "2px solid #c8993e",
+  padding:
+    window.innerWidth < 768
+      ? "20px"
+      : "30px 24px",
+  position: "relative",
+  borderRadius: "14px",
+  overflow: "hidden",
+  width: "100%",
+  boxSizing: "border-box",
+};
+
+const sectionTitle = {
+  color: "#6f130f",
+  borderBottom:
+    "2px solid #8b1e12",
+  paddingBottom: "6px",
+  marginBottom: "18px",
+  fontSize:
+    window.innerWidth < 768
+      ? "22px"
+      : "32px",
+  lineHeight: "1.2",
+};
+
+const menuItem = {
+  display: "flex",
+  justifyContent:
+    "space-between",
+  alignItems: "flex-start",
+  borderBottom:
+    "1px dotted #c8993e",
+  padding: "12px 0",
+  gap: "14px",
+  flexWrap: "nowrap",
+};
+
+const innerBorder = {
+  position: "absolute",
+  inset: "8px",
+  border:
+    "1px solid #d7b670",
+  pointerEvents: "none",
+};
+
+const cornerTopLeft = {
+  position: "absolute",
+  top: "8px",
+  left: "8px",
+  width: "30px",
+  height: "30px",
+  borderTop:
+    "3px solid #c8993e",
+  borderLeft:
+    "3px solid #c8993e",
+};
+
+const cornerTopRight = {
+  position: "absolute",
+  top: "8px",
+  right: "8px",
+  width: "30px",
+  height: "30px",
+  borderTop:
+    "3px solid #c8993e",
+  borderRight:
+    "3px solid #c8993e",
+};
