@@ -14,7 +14,6 @@ const layouts = [
   { key: "beverage", title: "BEVERAGES" },
   { key: "dessert", title: "DESSERTS" },
 ];
-  const isMobile = window.innerWidth < 768;
 
 export default function App() {
   const [menuData, setMenuData] = useState({});
@@ -53,9 +52,7 @@ export default function App() {
         data || []
       ).map((section) => ({
         ...section,
-        items: Array.isArray(
-          section.items
-        )
+        items: Array.isArray(section.items)
           ? section.items
           : [],
       }));
@@ -218,6 +215,8 @@ dessert`);
                 "space-between",
               alignItems: "center",
               fontWeight: "bold",
+              flexWrap: "wrap",
+              gap: "10px",
             }}
           >
             <span>{message}</span>
@@ -256,6 +255,7 @@ dessert`);
               width: isMobile
                 ? "150px"
                 : "230px",
+              maxWidth: "100%",
             }}
           />
         </div>
@@ -300,214 +300,15 @@ function MenuCard({
   const isMobile =
     window.innerWidth < 768;
 
-  // LUNCH DESIGN
-
-  if (layoutKey === "lunch") {
-    return (
-      <div style={specialCard}>
-        <TopAdmin
-          editing={editing}
-          isAdmin={isAdmin}
-          layoutKey={layoutKey}
-          fetchMenu={fetchMenu}
-          showMessage={showMessage}
-        />
-
-        <h1 style={goldBig}>
-          ATITHI LUNCH EXPRESS
-        </h1>
-
-        <div style={subText}>
-          Weekday Lunch |
-          Monday-Friday
-        </div>
-
-        <div style={subText}>
-          11:00 AM - 4:00 PM
-        </div>
-
-        <div style={italicText}>
-          Fresh • Fast •
-          Authentic
-        </div>
-
-        {sections.map((section) => (
-          <SectionBox
-            key={section.id}
-            section={section}
-            editing={editing}
-            isAdmin={isAdmin}
-            fetchMenu={fetchMenu}
-            showMessage={showMessage}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  // SIGNATURE DESIGN
-
-  if (layoutKey === "signature") {
-    return (
-      <div style={specialCard}>
-        <TopAdmin
-          editing={editing}
-          isAdmin={isAdmin}
-          layoutKey={layoutKey}
-          fetchMenu={fetchMenu}
-          showMessage={showMessage}
-        />
-
-        <h1 style={goldBig}>
-          ATITHI SIGNATURES
-        </h1>
-
-        <div style={imageGrid}>
-          <img
-            src="https://images.unsplash.com/photo-1606491956689-2ea866880c84"
-            alt=""
-            style={foodImg}
-          />
-
-          <img
-            src="https://images.unsplash.com/photo-1603894584373-5ac82b2ae398"
-            alt=""
-            style={foodImg}
-          />
-
-          <img
-            src="https://images.unsplash.com/photo-1563805042-7684c019e1cb"
-            alt=""
-            style={foodImg}
-          />
-        </div>
-
-        <div
-          style={{
-            marginTop: "30px",
-          }}
-        >
-          {sections.map((section) => (
-            <SectionBox
-              key={section.id}
-              section={section}
-              editing={editing}
-              isAdmin={isAdmin}
-              fetchMenu={fetchMenu}
-              showMessage={showMessage}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // DESSERT DESIGN
-
-  if (layoutKey === "dessert") {
-    return (
-      <div style={specialCard}>
-        <TopAdmin
-          editing={editing}
-          isAdmin={isAdmin}
-          layoutKey={layoutKey}
-          fetchMenu={fetchMenu}
-          showMessage={showMessage}
-        />
-
-        <h1 style={goldBig}>
-          DESSERTS
-        </h1>
-
-        <div
-          style={{
-            fontStyle: "italic",
-            marginBottom: "25px",
-          }}
-        >
-          Thoughtful endings
-        </div>
-
-        {sections.map((section) => (
-          <SectionBox
-            key={section.id}
-            section={section}
-            editing={editing}
-            isAdmin={isAdmin}
-            fetchMenu={fetchMenu}
-            showMessage={showMessage}
-          />
-        ))}
-
-        <img
-          src="https://images.unsplash.com/photo-1563805042-7684c019e1cb"
-          alt=""
-          style={dessertImg}
-        />
-      </div>
-    );
-  }
-
-  // BEVERAGE DESIGN
-
-  if (layoutKey === "beverage") {
-    return (
-      <div style={specialCard}>
-        <TopAdmin
-          editing={editing}
-          isAdmin={isAdmin}
-          layoutKey={layoutKey}
-          fetchMenu={fetchMenu}
-          showMessage={showMessage}
-        />
-
-        <h1 style={goldBig}>
-          BEVERAGES
-        </h1>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              isMobile
-                ? "1fr"
-                : "1fr 1fr",
-            gap: "30px",
-          }}
-        >
-          {sections.map((section) => (
-            <SectionBox
-              key={section.id}
-              section={section}
-              editing={editing}
-              isAdmin={isAdmin}
-              fetchMenu={fetchMenu}
-              showMessage={showMessage}
-            />
-          ))}
-        </div>
-
-        <div style={drinkWrap}>
-          <img
-            src="https://images.unsplash.com/photo-1623065422902-30a2d299bbe4"
-            alt=""
-            style={drinkImg}
-          />
-
-          <img
-            src="https://images.unsplash.com/photo-1571934811356-5cc061b6821f"
-            alt=""
-            style={drinkImg}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // NORMAL LAYOUTS
-
   return (
-    <div style={cardStyle}>
+    <div
+      style={{
+        ...cardStyle,
+        padding: isMobile
+          ? "20px 14px"
+          : "30px 24px",
+      }}
+    >
       <div style={innerBorder}></div>
 
       <div
@@ -524,10 +325,13 @@ function MenuCard({
 
       <div
         style={{
-          textAlign:
-            "center",
-          marginBottom:
-            "35px",
+          textAlign: "center",
+          marginBottom: isMobile
+            ? "24px"
+            : "35px",
+          padding: isMobile
+            ? "0 8px"
+            : "0",
         }}
       >
         <TopAdmin
@@ -540,12 +344,22 @@ function MenuCard({
 
         <h1
           style={{
-            color:
-              "#9b7a1d",
-            fontSize:
-              isMobile
-                ? "32px"
-                : "48px",
+            color: "#9b7a1d",
+            fontSize: isMobile
+              ? "24px"
+              : "48px",
+            lineHeight: "1.4",
+            textAlign: "center",
+            padding: isMobile
+              ? "0 10px"
+              : "0",
+            letterSpacing: "1px",
+            wordBreak: "break-word",
+            overflowWrap:
+              "break-word",
+            marginBottom: "12px",
+            marginTop: "10px",
+            fontWeight: "700",
           }}
         >
           {title}
@@ -553,10 +367,15 @@ function MenuCard({
 
         <p
           style={{
-            color:
-              "#6c4b2d",
-            fontStyle:
-              "italic",
+            color: "#6c4b2d",
+            fontStyle: "italic",
+            fontSize: isMobile
+              ? "14px"
+              : "16px",
+            lineHeight: "1.5",
+            padding: isMobile
+              ? "0 8px"
+              : "0",
           }}
         >
           Thoughtfully crafted
@@ -570,7 +389,9 @@ function MenuCard({
             isMobile
               ? "1fr"
               : "1fr 1fr",
-          gap: "30px",
+          gap: isMobile
+            ? "22px"
+            : "30px",
         }}
       >
         {sections.map((section) => (
@@ -643,323 +464,24 @@ function SectionBox({
   fetchMenu,
   showMessage,
 }) {
-  const saveItems = async (
-    updatedItems,
-    text
-  ) => {
-    await supabase
-      .from("menu")
-      .update({
-        items: updatedItems,
-      })
-      .eq("id", section.id);
-
-    fetchMenu();
-
-    showMessage(text);
-  };
-
-  const addItem = async () => {
-    const updated = [
-      ...section.items,
-      {
-        type: "item",
-        name: "New Item",
-        price: "0",
-      },
-    ];
-
-    saveItems(updated, "Item Added");
-  };
-
-  const addNote = async () => {
-    const updated = [
-      ...section.items,
-      {
-        type: "note",
-        name: "New Note",
-      },
-    ];
-
-    saveItems(updated, "Note Added");
-  };
-
-  const deleteSection =
-    async () => {
-      const confirmDelete =
-        window.confirm(
-          "Delete Section?"
-        );
-
-      if (!confirmDelete)
-        return;
-
-      await supabase
-        .from("menu")
-        .delete()
-        .eq("id", section.id);
-
-      fetchMenu();
-
-      showMessage(
-        "Section Deleted"
-      );
-    };
-
   return (
     <div
       style={{
         marginBottom: "30px",
       }}
     >
-      {editing && isAdmin ? (
-        <input
-          defaultValue={section.title}
-          onBlur={async (e) => {
-            await supabase
-              .from("menu")
-              .update({
-                title:
-                  e.target.value,
-              })
-              .eq(
-                "id",
-                section.id
-              );
-
-            fetchMenu();
-
-            showMessage(
-              "Section Updated"
-            );
-          }}
-          style={{
-            width: "100%",
-            padding: "10px",
-            fontSize: "22px",
-            marginBottom: "18px",
-            border:
-              "2px solid #8b1e12",
-            borderRadius: "8px",
-            fontWeight: "bold",
-          }}
-        />
-      ) : (
-        <h2 style={sectionTitle}>
-          {section.title}
-        </h2>
-      )}
-
-      {editing && isAdmin && (
-        <div style={adminWrap}>
-          <button
-            onClick={addItem}
-            style={buttonStyle("#0d7a3f")}
-          >
-            + Add Item
-          </button>
-
-          <button
-            onClick={addNote}
-            style={buttonStyle("#9b7a1d")}
-          >
-            + Add Note
-          </button>
-
-          <button
-            onClick={deleteSection}
-            style={buttonStyle("#b31212")}
-          >
-            Delete Section
-          </button>
-        </div>
-      )}
+      <h2 style={sectionTitle}>
+        {section.title}
+      </h2>
 
       {section.items.map(
-        (item, index) => {
-          if (
-            item.type ===
-            "note"
-          ) {
-            return (
-              <div key={index}>
-                {editing &&
-                isAdmin ? (
-                  <div
-                    style={{
-                      display:
-                        "flex",
-                      gap: "10px",
-                    }}
-                  >
-                    <input
-                      defaultValue={
-                        item.name
-                      }
-                      onBlur={(
-                        e
-                      ) => {
-                        const updated =
-                          [
-                            ...section.items,
-                          ];
-
-                        updated[
-                          index
-                        ].name =
-                          e.target.value;
-
-                        saveItems(
-                          updated,
-                          "Note Updated"
-                        );
-                      }}
-                      style={{
-                        ...inputStyle,
-                        flex: 1,
-                      }}
-                    />
-
-                    <button
-                      onClick={() => {
-                        const updated =
-                          section.items.filter(
-                            (
-                              _,
-                              i
-                            ) =>
-                              i !==
-                              index
-                          );
-
-                        saveItems(
-                          updated,
-                          "Note Deleted"
-                        );
-                      }}
-                      style={buttonStyle(
-                        "#b31212"
-                      )}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ) : (
-                  <p
-                    style={{
-                      fontStyle:
-                        "italic",
-                    }}
-                  >
-                    {item.name}
-                  </p>
-                )}
-              </div>
-            );
-          }
-
-          return (
-            <div key={index}>
-              {editing &&
-              isAdmin ? (
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "10px",
-                    marginBottom:
-                      "10px",
-                  }}
-                >
-                  <input
-                    defaultValue={
-                      item.name
-                    }
-                    onBlur={(
-                      e
-                    ) => {
-                      const updated =
-                        [
-                          ...section.items,
-                        ];
-
-                      updated[
-                        index
-                      ].name =
-                        e.target.value;
-
-                      saveItems(
-                        updated,
-                        "Item Updated"
-                      );
-                    }}
-                    style={{
-                      ...inputStyle,
-                      flex: 1,
-                    }}
-                  />
-
-                  <input
-                    defaultValue={
-                      item.price
-                    }
-                    onBlur={(
-                      e
-                    ) => {
-                      const updated =
-                        [
-                          ...section.items,
-                        ];
-
-                      updated[
-                        index
-                      ].price =
-                        e.target.value;
-
-                      saveItems(
-                        updated,
-                        "Price Updated"
-                      );
-                    }}
-                    style={{
-                      ...inputStyle,
-                      width:
-                        "90px",
-                    }}
-                  />
-
-                  <button
-                    onClick={() => {
-                      const updated =
-                        section.items.filter(
-                          (
-                            _,
-                            i
-                          ) =>
-                            i !==
-                            index
-                        );
-
-                      saveItems(
-                        updated,
-                        "Item Deleted"
-                      );
-                    }}
-                    style={buttonStyle(
-                      "#b31212"
-                    )}
-                  >
-                    Delete
-                  </button>
-                </div>
-              ) : (
-                <MenuItem
-                  name={item.name}
-                  price={item.price}
-                />
-              )}
-            </div>
-          );
-        }
+        (item, index) => (
+          <MenuItem
+            key={index}
+            name={item.name}
+            price={item.price}
+          />
+        )
       )}
     </div>
   );
@@ -969,14 +491,25 @@ function MenuItem({
   name,
   price,
 }) {
+  const isMobile =
+    window.innerWidth < 768;
+
   return (
     <div style={menuItem}>
-      <span>{name}</span>
+      <span
+        style={{
+          flex: 1,
+          paddingRight: "10px",
+        }}
+      >
+        {name}
+      </span>
 
       <span
         style={{
           color: "#8b1e12",
           fontWeight: "bold",
+          whiteSpace: "nowrap",
         }}
       >
         ${price}
@@ -1037,89 +570,29 @@ const cardStyle = {
     "2px solid #c8993e",
   padding: "30px 24px",
   position: "relative",
-};
-
-const specialCard = {
-  background: "#f9f2e4",
-  border:
-    "3px solid #b38a22",
-  padding: "35px 25px",
-  textAlign: "center",
-};
-
-const goldBig = {
-  color: "#a5821f",
-  fontSize: "42px",
-  marginBottom: "20px",
-};
-
-const italicText = {
-  fontStyle: "italic",
-  fontSize: "32px",
-  color: "#5c2e12",
-  marginBottom: "30px",
-};
-
-const subText = {
-  marginBottom: "5px",
-};
-
-const imageGrid = {
-  display: "grid",
-  gridTemplateColumns:
-    "1fr 1fr 1fr",
-  gap: "10px",
-};
-
-const foodImg = {
-  width: "100%",
-  height: "220px",
-  objectFit: "cover",
-};
-
-const dessertImg = {
-  width: "220px",
-  borderRadius: "10px",
-  marginTop: "30px",
-};
-
-const drinkWrap = {
-  display: "flex",
-  justifyContent:
-    "center",
-  gap: "15px",
-  marginTop: "30px",
-  flexWrap: "wrap",
-};
-
-const drinkImg = {
-  width: "220px",
-  height: "260px",
-  objectFit: "cover",
+  borderRadius: "12px",
+  overflow: "hidden",
 };
 
 const sectionTitle = {
   color: "#6f130f",
   borderBottom:
     "2px solid #8b1e12",
-  paddingBottom: "6px",
+  paddingBottom: "10px",
   marginBottom: "18px",
-};
-
-const adminWrap = {
-  display: "flex",
-  gap: "10px",
-  flexWrap: "wrap",
-  marginBottom: "20px",
+  lineHeight: "1.4",
+  wordBreak: "break-word",
 };
 
 const menuItem = {
   display: "flex",
   justifyContent:
     "space-between",
+  alignItems: "flex-start",
   borderBottom:
     "1px dotted #c8993e",
-  padding: "8px 0",
+  padding: "10px 0",
+  gap: "10px",
 };
 
 const innerBorder = {
@@ -1127,6 +600,7 @@ const innerBorder = {
   inset: "8px",
   border:
     "1px solid #d7b670",
+  pointerEvents: "none",
 };
 
 const cornerTopLeft = {
@@ -1151,13 +625,6 @@ const cornerTopRight = {
     "3px solid #c8993e",
   borderRight:
     "3px solid #c8993e",
-};
-
-const inputStyle = {
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #ccc",
-  fontSize: "14px",
 };
 
 const buttonStyle = (bg) => ({
