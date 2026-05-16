@@ -1,4 +1,3 @@
-// src/App.jsx
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabase";
@@ -54,13 +53,9 @@ export default function App() {
     fetchMenu(true);
   }, []);
 
-  // MESSAGE
-
   const showMessage = (text) => {
     setMessage(text);
   };
-
-  // FETCH MENU
 
   const fetchMenu = async (
     firstLoad = false
@@ -95,8 +90,6 @@ export default function App() {
     }
   };
 
-  // OWNER LOGIN
-
   const ownerLogin = () => {
     const password = prompt(
       "Enter Owner Password"
@@ -111,8 +104,6 @@ export default function App() {
     }
   };
 
-  // LOGOUT
-
   const logoutOwner = () => {
     setIsAdmin(false);
 
@@ -120,8 +111,6 @@ export default function App() {
 
     showMessage("Customer View Enabled");
   };
-
-  // ADD SECTION
 
   const addSection = async () => {
     const title = prompt(
@@ -155,8 +144,6 @@ dessert`);
 
     showMessage("Section Added");
   };
-
-  // LOADING SCREEN
 
   if (loading) {
     return (
@@ -314,8 +301,6 @@ function MenuCard({
   const isMobile =
     window.innerWidth < 768;
 
-  // ADD SUB SECTION
-
   const addSubSection = async () => {
     const newTitle = prompt(
       "Enter Sub Section Title"
@@ -428,7 +413,8 @@ function SectionBox({
   fetchMenu,
   showMessage,
 }) {
-  // SAVE ITEMS
+  const isMobile =
+    window.innerWidth < 768;
 
   const saveItems = async (
     updatedItems,
@@ -446,8 +432,6 @@ function SectionBox({
     showMessage(text);
   };
 
-  // ADD ITEM
-
   const addItem = async () => {
     const updated = [
       ...section.items,
@@ -461,8 +445,6 @@ function SectionBox({
     saveItems(updated, "Item Added");
   };
 
-  // ADD NOTE
-
   const addNote = async () => {
     const updated = [
       ...section.items,
@@ -474,8 +456,6 @@ function SectionBox({
 
     saveItems(updated, "Note Added");
   };
-
-  // DELETE SECTION
 
   const deleteSection =
     async () => {
@@ -497,7 +477,32 @@ function SectionBox({
     };
 
   return (
-    <div>
+    <div
+      style={{
+        background: "#fffaf0",
+        border: "2px solid #d4af37",
+        borderRadius: "18px",
+        padding: isMobile
+          ? "18px"
+          : "24px",
+        boxShadow:
+          "0 6px 20px rgba(0,0,0,0.08)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "6px",
+          background:
+            "linear-gradient(to right,#8b1e12,#d4af37,#8b1e12)",
+        }}
+      />
+
       {/* SECTION TITLE */}
 
       {editing && isAdmin ? (
@@ -523,27 +528,43 @@ function SectionBox({
           }}
           style={{
             width: "100%",
-            padding: "10px",
+            padding: "12px",
             fontSize: "22px",
-            marginBottom: "18px",
+            marginBottom: "20px",
             border:
               "2px solid #8b1e12",
-            borderRadius: "8px",
+            borderRadius: "10px",
             fontWeight: "bold",
           }}
         />
       ) : (
-        <h2
+        <div
           style={{
-            color: "#6f130f",
-            borderBottom:
-              "2px solid #8b1e12",
-            paddingBottom: "6px",
-            marginBottom: "18px",
+            textAlign: "center",
+            marginBottom: "22px",
           }}
         >
-          {section.title}
-        </h2>
+          <h2
+            style={{
+              color: "#8b1e12",
+              fontSize: isMobile
+                ? "24px"
+                : "28px",
+              marginBottom: "8px",
+            }}
+          >
+            {section.title}
+          </h2>
+
+          <div
+            style={{
+              width: "80px",
+              height: "2px",
+              background: "#d4af37",
+              margin: "0 auto",
+            }}
+          />
+        </div>
       )}
 
       {/* ADMIN BUTTONS */}
@@ -554,7 +575,8 @@ function SectionBox({
             display: "flex",
             flexWrap: "wrap",
             gap: "10px",
-            marginBottom: "20px",
+            marginBottom: "22px",
+            justifyContent: "center",
           }}
         >
           <button
@@ -663,6 +685,8 @@ function SectionBox({
                         "italic",
                       color:
                         "#555",
+                      textAlign:
+                        "center",
                     }}
                   >
                     {item.name}
@@ -703,10 +727,10 @@ function SectionBox({
                       ].name =
                         e.target.value;
 
-                      saveItems(
-                        updated,
-                        "Item Updated"
-                      );
+                        saveItems(
+                          updated,
+                          "Item Updated"
+                        );
                     }}
                     style={{
                       ...inputStyle,
@@ -793,17 +817,26 @@ function MenuItem({
         display: "flex",
         justifyContent:
           "space-between",
+        alignItems: "center",
         borderBottom:
-          "1px dotted #c8993e",
-        padding: "8px 0",
+          "1px dashed #d4af37",
+        padding: "12px 0",
       }}
     >
-      <span>{name}</span>
+      <span
+        style={{
+          color: "#3b2a1a",
+          fontSize: "16px",
+        }}
+      >
+        {name}
+      </span>
 
       <span
         style={{
           color: "#8b1e12",
           fontWeight: "bold",
+          fontSize: "17px",
         }}
       >
         ${price}
@@ -864,6 +897,7 @@ const cardStyle = {
   padding: "30px 24px",
   position: "relative",
   overflow: "hidden",
+  borderRadius: "22px",
 };
 
 const innerBorder = {
@@ -871,6 +905,7 @@ const innerBorder = {
   inset: "8px",
   border: "1px solid #d7b670",
   pointerEvents: "none",
+  borderRadius: "16px",
 };
 
 const cornerTopLeft = {
