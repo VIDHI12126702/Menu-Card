@@ -251,17 +251,19 @@ dessert`);
 
         {/* LOGO */}
 
-        <div style={logoWrap}>
-          <img
-            src={logo}
-            alt="logo"
-            style={{
-              width: isMobile
-                ? "150px"
-                : "230px",
-            }}
-          />
-        </div>
+       
+<img
+  src={logo}
+  alt="logo"
+  style={{
+    width: isMobile
+      ? "220px"
+      : "420px",
+    objectFit: "contain",
+  }}
+/>
+
+
 
         {/* MENUS */}
 
